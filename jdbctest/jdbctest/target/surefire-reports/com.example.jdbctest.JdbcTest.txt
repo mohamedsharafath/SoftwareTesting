@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: com.example.jdbctest.JdbcTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 1.074 s <<< FAILURE! - in com.example.jdbctest.JdbcTest
+select  Time elapsed: 1.003 s  <<< ERROR!
+java.sql.SQLSyntaxErrorException: Table 'jdbctest.tjdbc' doesn't exist
+	at com.example.jdbctest.JdbcTest.select(JdbcTest.java:48)
+
+insertData  Time elapsed: 0.052 s  <<< ERROR!
+java.sql.SQLIntegrityConstraintViolationException: Duplicate entry '1' for key 'csdjdbc.PRIMARY'
+	at com.example.jdbctest.JdbcTest.insertData(JdbcTest.java:38)
+
