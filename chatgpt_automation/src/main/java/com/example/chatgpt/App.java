@@ -4,6 +4,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.ss.usermodel.CellType;
@@ -25,35 +28,39 @@ public class App
 {
     private static WebDriver driver;
     private static Wait wait;
+    private List questionsList=new ArrayList<String>();
     public static void main( String[] args ) throws FileNotFoundException, IOException, InterruptedException, SessionNotCreatedException
     {
-        final String EXECUTABLE_PATH = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
-        final String USER_DATA_DIR = "C:\\Users\\Fast\\AppData\\Local\\Google\\Chrome\\User Data";
-        final String PROFILE_DIRECTORY = "Default";
+        final String EXECUTABLE_PATH = "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe";
+        final String USER_DATA_DIR = "C:\\Users\\Fast\\AppData\\Local\\BraveSoftware\\Brave-Browser\\User Data";
+        final String PROFILE_DIRECTORY = "Profile 2";
 
+        
         wait=new WebDriverWait(driver, Duration.ofSeconds(10));
-
+        
         ChromeOptions options = new ChromeOptions();
         options.setBinary(EXECUTABLE_PATH);
         options.addArguments("--user-data-dir=" + USER_DATA_DIR);
         options.addArguments("--profile-directory=" + PROFILE_DIRECTORY);
         
-
+        
         driver = new ChromeDriver(options);
-        driver.get("https://github.com/");
+        // driver.manage().timeouts().implicitlyWait(15,TimeUnit.SECONDS);
+        driver.get("https://chatgpt.com/");
         Thread.sleep(5000);
-        driver.quit();
+        // driver.quit();
         
 
+        String path="D:/COMPUTER_SCIENCE/SOFTWARETESTING/SoftwareTesting/chatgpt_automation/sheet/questions.xlsx";
+        App ob=new App();
+        ob.read(path);
         
         
-        // String path="D:/COMPUTER_SCIENCE/SOFTWARETESTING/SoftwareTesting/chatgpt_automation/sheet/questions.xlsx";
-        // App ob=new App();
-        // ob.read(path);
 
     }
     
-    public void read(String path) throws EncryptedDocumentException, IOException
+    @SuppressWarnings("unchecked")
+    public void read(String path) throws EncryptedDocumentException, IOException, InterruptedException
     {
         FileInputStream inp=new FileInputStream(path);
         Workbook work=WorkbookFactory.create(inp);
@@ -73,22 +80,32 @@ public class App
                     mark=(int)sheet.getRow(i).getCell(j).getNumericCellValue();
                     // System.out.print(sheet.getRow(i).getCell(j).getNumericCellValue()+"\t");
                 }
-
+                
             }
             String prompt=question+" Answer for "+mark+" mark question";
-            System.out.println(prompt);
+            // System.out.println(prompt);
+            questionsList.add(prompt);
             App ob=new App();
             ob.sendPrompt(prompt);
-            // System.out.println(Integer.toString(mark));
         }
+        // String question="";
+        // int mark=0;
+        // question=sheet.getRow(21).getCell(1).getStringCellValue();
+        // mark=(int)sheet.getRow(21).getCell(2).getNumericCellValue();
+        // String prompt=question+" Answer for "+mark+" mark question";
+        // App ob=new App();
+        // ob.sendPrompt(prompt);
+        // System.out.println("Successfully Completed");
         
     }
-    private void sendPrompt(String prompt) {
+    @SuppressWarnings("unchecked")
+    private void sendPrompt(String prompt) throws InterruptedException {
         
         By textareaLocator = By.id("prompt-textarea");
-        By submitButtonLocator = By.cssSelector("button[data-testid=send-button]");
+        By submitButtonLocator = By.xpath("//*[@id='__next']/div[1]/div[2]/main/div[1]/div[2]/div[1]/div/form/div/div[2]/div/div/button");
 
         driver.findElement(textareaLocator).sendKeys(prompt);
+        Thread.sleep(2000);
         driver.findElement(submitButtonLocator).click();
 
         wait.until(ExpectedConditions.invisibilityOfElementLocated(submitButtonLocator));
